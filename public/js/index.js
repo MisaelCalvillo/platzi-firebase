@@ -1,6 +1,10 @@
 let btnLogin = document.getElementById("btnLogin");
 let btnLogout = document.getElementById("btnLogout");
 
+let ref = firebase.database().ref("usuario");
+
+let usuario = {};
+
 firebase.auth().onAuthStateChanged(function(user) {
   if(user) {
     console.log("tenemos usuario");
@@ -21,6 +25,12 @@ btnLogin.addEventListener("click", function(event){
   firebase.auth().signInWithPopup(provider)
   .then(function(datosUsuario) {
     console.log(datosUsuario);
+    usuario = {
+      nombre: datosUsuario.user.displayName,
+      email: datosUsuario.user.email,
+      uid: datosUsuario.user.uid
+    }
+    agregarUsuario(usuario, usuario.uid);
   })
   .catch(function(error){
     if (error) {
@@ -48,4 +58,8 @@ function mostrarLogin() {
   console.log("funcion login");
   btnLogout.style.display = "none";
   btnLogin.style.display = "block";
+}
+
+function agregarUsuario(usuario, id){
+  ref.child(id).update(usuario)
 }
